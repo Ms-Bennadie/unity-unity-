@@ -18,7 +18,7 @@ const GameHeader = () => {
         transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
         className="text-3xl sm:text-4xl font-semibold tracking-tight"
       >
-        Harmony
+        Unity
       </motion.h1>
       <motion.p 
         initial={{ opacity: 0 }}
