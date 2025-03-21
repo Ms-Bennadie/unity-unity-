@@ -33,7 +33,7 @@ export const Tile: React.FC<TileProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className={cn("rounded-lg", className)}
+        className={cn("rounded-xl", className)}
       />
     );
   }
@@ -64,7 +64,7 @@ export const Tile: React.FC<TileProps> = ({
       scale: [1, 1.05, 1],
       boxShadow: [
         "0 1px 3px rgba(0,0,0,0.1)",
-        "0 10px 15px -5px rgba(0,0,0,0.1)",
+        "0 10px 15px -5px rgba(59,130,246,0.5)",
         "0 1px 3px rgba(0,0,0,0.1)"
       ],
       transition: {
@@ -90,12 +90,12 @@ export const Tile: React.FC<TileProps> = ({
       className={cn(
         "tile",
         isMovable && !isComplete && "tile-movable",
-        isCorrect && "bg-gradient-to-br from-blue-50 to-secondary border-blue-100/50",
+        isCorrect && "bg-gradient-to-br from-blue-500/20 to-blue-600/20 border-blue-500/20",
         className
       )}
     >
       <span className={cn(
-        "text-2xl font-medium",
+        "text-2xl font-semibold",
         isCorrect ? "text-primary" : "text-foreground"
       )}>
         {value}
