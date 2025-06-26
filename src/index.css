@@ -45,41 +45,62 @@
   .tile {
     @apply relative flex items-center justify-center rounded-xl 
            bg-gradient-to-br from-secondary to-secondary/80
-           font-medium text-foreground shadow-md backdrop-blur-sm 
-           border border-white/10 transition-all duration-200
-           hover:shadow-lg hover:scale-[1.02] 
-           active:scale-[0.98] active:shadow-sm;
+           font-bold text-foreground shadow-lg backdrop-blur-sm 
+           border-2 border-white/20 transition-all duration-300
+           hover:shadow-xl hover:scale-105 hover:border-primary/50
+           active:scale-95 active:shadow-md
+           select-none touch-manipulation;
     background-size: 100% 100%;
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
     transform-style: preserve-3d;
+    min-height: 60px;
+    font-size: clamp(1.25rem, 4vw, 2rem);
   }
   
   .tile-movable {
     @apply cursor-pointer;
   }
   
+  .tile-movable:hover {
+    @apply bg-gradient-to-br from-primary/20 to-primary/10;
+  }
+  
   .control-button {
-    @apply inline-flex h-10 items-center justify-center rounded-xl 
-           bg-secondary/90 px-4 py-2 text-sm font-medium shadow-md 
-           backdrop-blur-sm border border-white/10
-           transition-all duration-200 
-           hover:bg-secondary hover:shadow-lg hover:border-primary/30
-           active:translate-y-0.5 active:shadow-sm
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex h-12 items-center justify-center rounded-xl 
+           bg-secondary/90 px-6 py-3 text-sm font-semibold shadow-lg 
+           backdrop-blur-sm border-2 border-white/20
+           transition-all duration-300 
+           hover:bg-secondary hover:shadow-xl hover:border-primary/50 hover:scale-105
+           active:translate-y-1 active:shadow-md active:scale-95
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
+           select-none touch-manipulation;
   }
   
   .celebration-particle {
-    @apply absolute rounded-full bg-primary/50 animate-celebration;
-    width: 10px;
-    height: 10px;
+    @apply absolute rounded-full bg-primary/70 animate-celebration;
+    width: 12px;
+    height: 12px;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
   }
 
-  /* Game card styling similar to the reference UI */
   .game-card {
-    @apply relative rounded-2xl bg-card overflow-hidden border border-white/10
-           transition-all duration-300 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)]
-           hover:scale-[1.02];
+    @apply relative rounded-2xl bg-card overflow-hidden border-2 border-white/20
+           transition-all duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]
+           hover:scale-[1.01] hover:border-primary/30;
+  }
+
+  .progress-indicator {
+    @apply w-full bg-secondary/50 rounded-full h-2 overflow-hidden;
+  }
+  
+  .progress-bar {
+    @apply h-full bg-gradient-to-r from-primary to-blue-400 transition-all duration-500 ease-out;
+  }
+
+  .stats-card {
+    @apply flex flex-col items-center justify-center p-4 bg-gradient-to-br from-white/10 to-white/5 
+           rounded-lg border border-white/20 backdrop-blur-sm transition-all duration-300 
+           hover:border-primary/30 hover:bg-white/10;
   }
 }
-

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Tile } from "@/components/Tile";
 import { shuffle } from "@/lib/gameUtils";
+import { Trophy, Sparkles } from "lucide-react";
 
 interface GameBoardProps {
   size: number;
@@ -26,6 +27,30 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [board, setBoard] = useState<number[][]>([]);
   const [emptyPos, setEmptyPos] = useState<[number, number]>([size - 1, size - 1]);
   const [initializing, setInitializing] = useState(true);
+  const [progress, setProgress] = useState(0);
+
+  // Calculate progress based on correctly placed tiles
+  const calculateProgress = useCallback(() => {
+    if (!board.length) return 0;
+    
+    let correctTiles = 0;
+    const totalTiles = size * size - 1; // Exclude empty tile
+    
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        const value = board[i][j];
+        if (value !== 0) {
+          const correctRow = Math.floor((value - 1) / size);
+          const correctCol = (value - 1) % size;
+          if (i === correctRow && j === correctCol) {
+            correctTiles++;
+          }
+        }
+      }
+    }
+    
+    return (correctTiles / totalTiles) * 100;
+  }, [board, size]);
 
   // Initialize the board with shuffled tiles
   const initBoard = useCallback(() => {
@@ -97,6 +122,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
     onMove();
   };
 
+  // Update progress when board changes
+  useEffect(() => {
+    if (!initializing) {
+      setProgress(calculateProgress());
+    }
+  }, [board, calculateProgress, initializing]);
+
   // Initialize board on load and when size changes
   useEffect(() => {
     initBoard();
@@ -114,18 +146,41 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
   // Calculate the grid size based on the board dimension
   const gridTemplateColumns = `repeat(${size}, 1fr)`;
-  const tileSizeClass = size === 3 ? "h-24 sm:h-28" : size === 4 ? "h-20 sm:h-24" : "h-16 sm:h-20";
+  const tileSizeClass = size === 3 ? "h-20 sm:h-24" : size === 4 ? "h-16 sm:h-20" : "h-12 sm:h-16";
 
   return (
-    <div className="flex justify-center mb-6">
+    <div className="flex flex-col items-center mb-6 space-y-4">
+      {/* Progress Bar */}
+      {!initializing && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-muted-foreground">Progress</span>
+            <span className="text-sm font-bold text-primary">{Math.round(progress)}%</span>
+          </div>
+          <div className="progress-indicator">
+            <motion.div 
+              className="progress-bar"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            />
+          </div>
+        </motion.div>
+      )}
+
+      {/* Game Board */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="relative w-full max-w-md aspect-square p-4 bg-white/50 backdrop-blur-sm rounded-xl border border-white/40 shadow-lg"
+        className="relative w-full max-w-md aspect-square p-4 game-card"
       >
         <div 
-          className="grid gap-2 h-full w-full"
+          className="grid gap-3 h-full w-full"
           style={{ gridTemplateColumns }}
         >
           <AnimatePresence>
@@ -149,33 +204,59 @@ const GameBoard: React.FC<GameBoardProps> = ({
         </div>
         
         {isComplete && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-              className="px-6 py-4 bg-white/90 backdrop-blur-sm rounded-lg shadow-xl border border-white/50"
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm rounded-2xl"
+          >
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="text-center p-6"
             >
-              <h3 className="text-xl font-semibold mb-2">Puzzle Solved!</h3>
-              <button 
+              <Trophy className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold mb-2 text-primary">Puzzle Solved!</h3>
+              <p className="text-muted-foreground mb-6">Congratulations! 🎉</p>
+              <motion.button 
                 onClick={resetGame}
-                className="control-button w-full"
+                className="control-button bg-primary text-primary-foreground"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
+                <Sparkles className="h-4 w-4 mr-2" />
                 Play Again
-              </button>
+              </motion.button>
             </motion.div>
-          </div>
+          </motion.div>
         )}
         
-        {/* Celebration particles */}
-        {isComplete && Array.from({ length: 20 }).map((_, i) => (
-          <div 
+        {/* Enhanced celebration particles */}
+        {isComplete && Array.from({ length: 30 }).map((_, i) => (
+          <motion.div 
             key={`particle-${i}`}
             className="celebration-particle"
+            initial={{ 
+              opacity: 0,
+              x: Math.random() * 400 - 200,
+              y: Math.random() * 400 - 200,
+              scale: 0
+            }}
+            animate={{ 
+              opacity: [0, 1, 0],
+              y: [0, -100, -200],
+              scale: [0, 1, 0.5],
+              rotate: Math.random() * 360
+            }}
+            transition={{
+              duration: 2,
+              delay: Math.random() * 0.5,
+              ease: "easeOut"
+            }}
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 0.5}s`
             }}
           />
         ))}
